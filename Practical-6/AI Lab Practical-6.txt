@@ -1,0 +1,130 @@
+import csv
+import time
+
+a = []
+
+filepath = input("Enter Path of CSV File : ")
+
+print("\n")
+
+with open(filepath,'r')as file:
+    filecontent=csv.reader(file)
+    for row in filecontent:
+        print(row)
+        a.append(row)
+
+headings = a[0]
+unique=[]
+d={}
+
+a.remove(a[0])
+
+temp = [[] for _ in range(len(headings))]
+
+for i in range(len(a)):
+    for j in range(len(a[i])):
+        temp[j].append(a[i][j])
+
+n=len(headings)
+m=len(temp[0])
+
+temp1 = [[] for _ in range(len(headings))]
+
+for i in range(len(temp)):
+    for j in range(len(temp[i])):
+        if temp[i][j] not in temp1[i]:
+            temp1[i].append(temp[i][j])
+    d.update({headings[i]:temp1[i]})
+
+n1 = temp1[-1]
+temp1.remove(temp1[-1])
+
+print(n1)
+print(temp1)
+print(temp)
+
+d1={}
+d2={}
+for i in range(len(n1)):
+    count=0
+    for j in range(len(temp[-1])):
+        if n1[i]==temp[-1][j]:
+            count+=1
+    d1.update({n1[i]:count})
+
+print(d1) #Total Yes/No
+
+total=[]
+d5={}
+d8=[]
+d6=[]
+for i in range(len(n1)):
+    d3=[]
+    d7=[]
+    for j in range(len(headings)-1):
+        d4={}
+        for k in range(len(temp1[j])):
+            count=0
+            count1=0
+            for l in range(len(temp[j])):
+                if temp1[j][k]==temp[j][l] and n1[i]==temp[-1][l]:
+                    count+=1
+                if n1[i]==temp[-1][l]:
+                    count1+=1
+            d4.update({temp1[j][k]:count})
+            d6.append([n1[i],temp1[j][k],count/count1])
+        d3.append(d4)
+#         d7.append(d6)
+    d5.update({n1[i]:d3})
+#     d8.append(d7)
+
+print("\n Count : \n")
+print(d5)
+print("\n\n Probabilities \n")
+print(d6)
+
+start=time.time()
+while True:
+    print("\n\n")
+    for k,v in d.items():
+        print(k,"\t",v)
+    print("\n\n")
+    prob=[1 for _ in range(len(n1))]
+    decision={}
+    t=[]
+    for i in range(len(headings)-1):
+        print("Enter the ",headings[i]," : ",end=" ")
+        t.append(input())
+    for i in range(len(n1)):
+        for j in range(len(t)):
+            for k in range(len(d6)):
+                if n1[i].lower()==d6[k][0].lower() and t[j].lower()==d6[k][1].lower():
+                    prob[i]*=d6[k][2]
+
+        prob[i]*=(d1[n1[i]]/len(temp[0]))
+        decision.update({n1[i]:prob[i]})
+
+#     print()
+#     print(decision)        
+
+    maxx=-999999
+    ny=""
+    
+    print("\n\n")
+    for k,v in decision.items():
+        print("Probability of '",k,"' : ",v)
+        if maxx<decision[k]:
+            maxx=decision[k]
+            ny=k
+    print("\n")
+    print("Our Decision is ",ny)
+    
+    print("\n")
+    ans=input("Do you Wish to Continue [y/n] : ")
+    
+    if ans.lower()=="n":
+        break
+    
+end=time.time()
+print("\n\n")
+print("Time Taken by the Algorithm : ",end-start)
